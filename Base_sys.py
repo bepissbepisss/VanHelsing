@@ -1,5 +1,4 @@
 import os
-import pygame
 
 
 run = True
@@ -19,15 +18,50 @@ map = [['forest'],['forest'],['forest'],['mountain'],['mountain'], # y = 0
 
 
 HP = 100
+max_HP = 100
 ATK = 20
 POTION = 0
 GOLD = 50
-global x_position # find a better solution for this so that I can avoid using gloabl variables.
-x_position = 0
-global y_position
-y_position = 0
-location = map[(int(x_position) + (int(y_position))*5)]
-print(location)
+x_len = len(map) - 1
+y_len = len(map[0]) - 1
+x = 0
+y = 0
+location = map[y][x]
+
+
+
+biom = {
+    'forest' : {
+        'text' : "FOREST",
+        'enemies' : True},
+    'plains' : {
+        'text' : "PLAINS",
+        'enemies' : True},
+    'mountain' : {
+        'text' : "MOUNTAIN",
+        'enemies' : True},
+    'hills' : {
+        'text' : "HILLS",
+        'enemies' : False},
+    'river' : {
+        'text' : "RIVER",
+        'enemies' : True},
+    'bridge' : {
+        'text' : "BRIDGE",
+        'enemies': False},
+    'town' : {
+        'text' : "TOWN",
+        'enemies' : False},
+    'fields' : {
+        'text' : "FIELDS",
+        'enemies' : False},
+    'shop' : {
+        'text' : "SHOP",
+        'enemies' : False},
+}
+
+location_name = biom[location]['text']
+location_enemy_status = biom[location]['enemies']
 
 def draw():
     print('<~|-------------------------------------------------|~>')
@@ -39,12 +73,13 @@ def save():
     list = [
         name,
         str(HP),
+        str(max_HP),
         str(ATK),
         str(POTION),
         str(GOLD),
         str(location),
-        str(x_position),
-        str(y_position),
+        str(x),
+        str(y),
     ]
 
     f = open("load.txt", "w")
@@ -58,6 +93,9 @@ while run:
     while menu:
         clear()
         draw()
+        print(location)
+        print(location_name)
+        print(location_enemy_status)
         print('1 -- New Game')
         print('2 -- Load Game')
         print('3 -- Rules')
@@ -88,15 +126,16 @@ while run:
             load_list = f.readlines()
             name = load_list[0][:-1]
             HP = load_list[1][:-1]
-            ATK = load_list[2][:-1]
-            POTION = load_list[3][:-1]
-            GOLD = load_list[4][:-1]
-            location = load_list[5][:-1]
+            max_HP = load_list[2][:-1]
+            ATK = load_list[3][:-1]
+            POTION = load_list[4][:-1]
+            GOLD = load_list[5][:-1]
+            location = load_list[6][:-1]
             clear()
             draw()
-            print ('You\'re back ' + name + ', finally...')
+            print ('You\'re back ""' + name + '"", finally...')
             print('here are your stats btw, not very impressive just saying')
-            print('-HP:' + HP + ' -ATK:' + ATK + ' -POTION:' + POTION + ' -GOLD:' + GOLD + ' -LOCATION:' + location)  #there's a syntax error here IDK why though, something to do with the location. ' -LOCATION:' + location)
+            print('-HP:' + HP + '/' + max_HP + ' -ATK:' + ATK + ' -POTION:' + POTION + ' -GOLD:' + GOLD + ' -LOCATION:' + location)  #there's a syntax error here IDK why though, something to do with the location. ' -LOCATION:' + location)
             draw()
             input('> Press ENTER to return to menu...')
 
@@ -109,6 +148,15 @@ while run:
 
     while play:
         save() #autosave
+        clear()
+
+        draw()
+        print("LOCATION: " + biom[map[x][y]]["text"])
+        draw()
+
+        print("NAME: " + name)
+        print("HP: " + str(HP) + "/" + str(max_HP))
+        print("ATK: " + str(ATK))
 
         direct = input('> ')
         print(location) # I need to figure out how tf to make the position change in the map
