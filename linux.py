@@ -97,9 +97,24 @@ map = [['forest','forest','forest','mountain','mountain'], # y = 0
         ['plains','fields','plains','forest','mountain']]  # y = 6
 
 
+
+#This dictionary contains buff stats for the player.
+global player_buff
+player_buff = {
+    'min_ATK$':0,
+    'max_ATK$':0,
+    'HP$':0,
+    'LUCK$':0,
+    'SPEED$':0,
+                }
+
+
 HP = 100
-max_HP = 100
-ATK = 20
+max_HP = 100 + player_buff['max_HP$']
+min_ATK = 20 + player_buff['min_ATK$']
+max_ATK = 25 + player_buff['max_ATK$']
+LUCK = 10 + player_buff['LUCK$']
+SPEED = 60 + player_buff['SPEED$']
 POTION = 0
 GOLD = 50
 x_len = len(map)- 1
