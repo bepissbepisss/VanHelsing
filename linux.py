@@ -103,7 +103,7 @@ global player_buff
 player_buff = {
     'min_ATK$':0,
     'max_ATK$':0,
-    'HP$':0,
+    'max_HP$':0,
     'LUCK$':0,
     'SPEED$':0,
                 }
