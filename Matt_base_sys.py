@@ -185,6 +185,14 @@ inventory = {
         'trait' : 'misc.',
         'discription' : ('A little weird carrying this around.')
                     },
+    'steak' : {
+        'quantity' : 0,
+        'value' : 15,
+        'min_ATK' : 5,
+        'max_ATK' : 10,
+        'HOLY' : 25,
+        'trait' : 'weapon',
+        'discription' : ('Don\'t eat this, it might break the game.'),
     'fang' : {
         'quantity' : 0,
         'value' : 10,
@@ -192,7 +200,7 @@ inventory = {
         'discription' : ('Try not to poke yourself with it.')
     }
             }
-
+}
 
 
 #This function lets the player use items
@@ -500,11 +508,10 @@ def inputs():
         inputs()
 
 #This function deals with applying player damage to enemies
-def attack():
-    clear()
+def attack(): 
     global mob
     is_crit = is_critical()
-    hit_chance = (player_stat['SPEED']/mob['speed'])*100 + (player_stat['LUCK']/2) - (mob['LUCK']/2)
+    hit_chance = (player_stat['SPEED']/mob['speed'])*100 + (player_stat['LUCK']/2) - (mob['luck']/2)
     if hit_chance <= 0:
         hit_chance = 1
     if mob['speed'] <= 0:
@@ -523,14 +530,13 @@ def attack():
 #This function checks for crits for the damage function, for the player
 def is_critical():
     crit = random.randrange(1,101)
-    if crit <= player_stat['luck'] + player_buff['critical strike'] :
+    if crit <= player_stat['LUCK'] + ((player_stat_bonus['LUCK_bonus'])/2) :
         return True
     return False
 
 
 #This function just reduces repetition, it's has the inputs and the function calls, that simply get repeated a few times, so I want to reduce the amount of lines im using with this function. This is used in the attack function.
 def attack_confirm(hit_chance, is_crit=False):
-    clear()
     confirmation = input('<< Want To Proceed? [Yes]--[No] >>')
     if re.match(r'^(yes|ye|y|1)$', confirmation.lower()) != None:
         damage(hit_chance, is_crit)
@@ -577,7 +583,7 @@ def parry_comfirm(hit_chance, parry=False, is_crit=False):
 
 #This function determines whether or not the pplayer parries
 def is_parry():
-    parry = (player_stat['speed']/mob['speed'])/2*100 + (player_stat['luck']/2) - (mob['luck']/2)
+    parry = (player_stat['SPEED']/mob['speed'])/2*100 + (player_stat['LUCK']/2) - (mob['luck']/2)
     if parry <= random.randrange(1, 101):
         return True
     return False
@@ -618,12 +624,11 @@ def damage(hit_chance, parry=False, is_crit=False):
 
 #here we check to see how low the enemy is, and how low we are
 def check_death():
-    clear()
     global mob
     global xp
-    if player_stat['hp'] <= 0:
+    if player_stat['HP'] <= 0:
         print (bcolors.UNDERLINE + bcolors.WARNING + '~~~' + bcolors.FAIL +  "YOU DIED" + bcolors.WARNING + '~~~' + bcolors.ENDC)
-        player_stat['hp'] = player_stat['max_HP']
+        player_stat['HP'] = player_stat['max_HP']
         combat = False
         game_over()
     if mob['hp'] <= 0:
@@ -637,7 +642,6 @@ def check_death():
 
 #This function also for lower line count, man im doing a lot of these eh?
 def almost_ded(x):
-    clear()
     global mob
     if mob['hp'] <= mob['hp']/3:
         print('<< It\'s Almost Dead! >>')
@@ -648,21 +652,20 @@ def almost_ded(x):
 
 
 #this is the enemie's turn
-def enemie_turn():
-    clear()
+def enemie_turn():   
     global mob
     hit_chance = (mob['speed']/player_stat['SPEED'])*100 - (player_stat['LUCK']/2) + (mob['luck']/2)
-    damage = random.randrange(mob['atk_min'], (mob['atk_max'] + 1))
+    damage = random.randrange(mob['min_ATK'], (mob['max_ATK'] + 1))
     is_crit = enemie_crit()
     if hit_chance >= random.randrange(1,101):
-        player_stat['hp'] = player_stat['hp'] - damage
-        print(bcolors.FAIL + '<< ({}) Dealt'.format(mob['name']) + bcolors.WARNING + '({})'.format(damage) + bcolors.FAIL + 'Damage! Your Health Is Now' + bcolors.WARNING + '({}hp)'.format(player_stat['hp']) + bcolors.FAIL + '>>' + bcolors.ENDC)
+        player_stat['HP'] = player_stat['HP'] - damage
+        print(bcolors.FAIL + '<< ({}) Dealt'.format(mob['name']) + bcolors.WARNING + '({})'.format(damage) + bcolors.FAIL + 'Damage! Your Health Is Now' + bcolors.WARNING + '({}hp)'.format(player_stat['HP']) + bcolors.FAIL + '>>' + bcolors.ENDC)
         check_death()
         inputs()
     if is_crit:
         damage = damage * 1.5
-        player_stat['hp'] = player_stat['hp'] - damage
-        print(bcolors.FAIL + bcolors.UNDERLINE + '<< ({}) Dealt'.format(mob['name'])  + bcolors.WARNING + '({})'.format(damage) + bcolors.FAIL +  'Critical Damage! Your Health Is Now' + bcolors.WARNING + '({}hp)'.format(player_stat['hp']) + bcolors.FAIL + '>>'.format(mob['name'], damage, player_stat['hp']) + bcolors.ENDC)
+        player_stat['HP'] = player_stat['HP'] - damage
+        print(bcolors.FAIL + bcolors.UNDERLINE + '<< ({}) Dealt'.format(mob['name'])  + bcolors.WARNING + '({})'.format(damage) + bcolors.FAIL +  'Critical Damage! Your Health Is Now' + bcolors.WARNING + '({}hp)'.format(player_stat['HP']) + bcolors.FAIL + '>>'.format(mob['name'], damage, player_stat['HP']) + bcolors.ENDC)
         check_death()
         inputs()
     else:
@@ -777,7 +780,7 @@ while intro:
     print("   $$ |   $$ |  $$ |\$$$$$$$\       \$$$$$$  |\$$$$$$$ |$$ | $$ | $$ |\$$$$$$$\              ")
     print("   \__|   \__|  \__| \_______|       \______/  \_______|\__| \__| \__| \_______|         ")
     print("Holly H, Matt L, Jill L, Kai YT\n Press <0> to continue...")
-    print("Game systems from video guide https://www.youtube.com/watch?v=i3j3iZNPUbI")
+    print("Map system from video guide https://www.youtube.com/watch?v=i3j3iZNPUbI")
     selection = input('> ')
     if selection == '0':
         intro = False
