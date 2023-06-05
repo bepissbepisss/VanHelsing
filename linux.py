@@ -4,24 +4,24 @@ import os
 # clear function os option
 
 
-print("Please select operating system: \n 0 -- Unix (macOS, Linux, BSD... \n 1 -- Windows")
-os = input('> ')
-
-if os == '0':
-    def clear():
-        os.system("clear")
-elif os == '1':
-    def clear():
-        os.system("cls")
+#print("Please select operating system: \n 0 -- Unix (macOS, Linux, BSD... \n 1 -- Windows")
+#os = input('> ')
+#
+#if os == '0':
+#    def clear():
+#        os.system("clear")
+#elif os == '1':
+#    def clear():
+#        os.system("cls")
 
 
 
 def draw():
     print('<~|-------------------------------------------------|~>')
 
-#def clear():
-#    os.system("clear") #Unix
-#    #os.system("cls") #Windows
+def clear():
+    os.system("clear") #Unix
+    #os.system("cls") #Windows
 
 def save():
     list = [
@@ -259,15 +259,23 @@ while run:
             play = False
             menu = True
             save()
-        elif dest == "3":
+        elif dest == "2":
             if y > 0:
                 y -= 1  
+            else: 
+                y = y_len
         elif dest == "4":
             if x < x_len:
                 x += 1
-        elif dest == "2":
+            else:
+                x = 0
+        elif dest == "3":
             if y < y_len:
                 y += 1  
+            else:
+                y = 0
         elif dest == "1":
             if x > 0: 
                 x -= 1 
+            else:
+                x = x_len
