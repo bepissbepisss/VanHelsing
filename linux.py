@@ -4,24 +4,20 @@ import os
 # clear function os option
 
 
-#print("Please select operating system: \n 0 -- Unix (macOS, Linux, BSD... \n 1 -- Windows")
-#os = input('> ')
-#
-#if os == '0':
-#    def clear():
-#        os.system("clear")
-#elif os == '1':
-#    def clear():
-#        os.system("cls")
+print("Please select operating system: \n 0 -- Unix (macOS, Linux, BSD... \n 1 -- Windows")
+os = input('> ')
+
+if os == '0':
+    def clear():
+        os.system("clear")
+elif os == '1':
+    def clear():
+        os.system("cls")
 
 
 
 def draw():
     print('<~|-------------------------------------------------|~>')
-
-def clear():
-    os.system("clear") #Unix
-    #os.system("cls") #Windows
 
 def save():
     list = [
