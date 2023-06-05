@@ -5,12 +5,12 @@ import os
 
 
 print("Please select operating system: \n 0 -- Unix (macOS, Linux, BSD... \n 1 -- Windows")
-os = input('> ')
+operating_sys = input('> ')
 
-if os == '0':
+if operating_sys == '0':
     def clear():
         os.system("clear")
-elif os == '1':
+elif operating_sys == '1':
     def clear():
         os.system("cls")
 
