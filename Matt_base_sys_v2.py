@@ -227,10 +227,10 @@ def lv_up():
     global xp
     global req
     global lv
-    if int(xp) >= req:
-        lv = lv + 1
-        xp = xp - req
-        req = req * 2
+    if xp >= int(req):
+        lv = int(lv) + 1
+        xp = int(xp) - int(req)
+        req = (int(req)) * 2
         player_stat['min_ATK'] = player_stat['min_ATK']*1.5
         player_stat['max_ATK'] = player_stat['max_ATK']*1.5
         player_stat['max_HP'] = player_stat['max_HP']*1.5
@@ -257,7 +257,7 @@ def game_over():
     lost = (int(GOLD))/2
     GOLD =  int(GOLD) - lost
     print(bcolors.FAIL + 'YOU LOST ({})g'.format(lost) + bcolors.ENDC)
-    world(x, y)
+    world()
 
 
 def inven(combat = False):
@@ -398,7 +398,7 @@ def inven(combat = False):
                 inven()
         elif re.match(r'^(6|exit|leave|cancel|stop)$', action.lower()) != None:
             if combat == True:
-                inputs()
+                inputs(play, combat)
             else:
                 inventory_status = False
 
@@ -460,6 +460,7 @@ attractor = 0
 
 #This determines whether or not the player encounters an enemy
 def check_encounter():
+    clear()
     global attractor
     global mob
     if attractor > 0:
@@ -485,12 +486,14 @@ def check_encounter():
 def combat_intro():
     global mob
     print(bcolors.WARNING + '<< You Engaged Comabt With ({}), They Have ({}hp)! >>'.format(mob['name'], mob['hp']) + bcolors.ENDC)
-    inputs(True)
+    inputs(False, True)
 
 
 #This function asks for the player's input
-def inputs(combat = True):
+def inputs(play, combat):
     global mob
+    while play:
+        world()
     while combat:
         action = input(bcolors.BOLD + bcolors.UNDERLINE + '<< What Do You Want To Do? [Attack]--[Escape]--[Parry]--[Inventory] >>' + bcolors.ENDC)
         if re.match(r'^(attack|atk|1)$', action.lower()) != None:
@@ -502,12 +505,12 @@ def inputs(combat = True):
                 parry()
             else:
                 print(bcolors.FAIL + 'YOU DON"T HAVE A SHIELD EQUIPED' + bcolors.ENDC)
-                inputs()
+                inputs(play, combat)
         elif re.match(r'^(inventory|bag|sac|my stuff|4)$', action.lower()) != None:
             inven(combat = True)
         else:
             invalid()
-            inputs()
+            inputs(False, True)
 
 #This function deals with applying player damage to enemies
 def attack():
@@ -547,7 +550,7 @@ def attack_confirm(hit_chance, is_crit=False):
         damage(hit_chance, False, is_critical())
     elif re.match(r'^(no|n|2)$', confirmation.lower()) != None:
         clear()
-        inputs()
+        inputs(False, True)
     else:
         invalid()
         attack_confirm(hit_chance, False, is_critical())
@@ -580,7 +583,7 @@ def parry_comfirm(hit_chance, parry=False, is_crit=False):
         print(bcolors.WARNING + 'You Prepare your Shield to parry...' + bcolors.ENDC)
         damage(hit_chance, parry, is_crit)
     elif re.match(r'^(no|n|2)$', comfirmation.lower()) != None:
-        inputs()
+        inputs(False, True)
     else:
         invalid()
         parry_comfirm(hit_chance, parry=False, is_crit=False)
@@ -606,7 +609,7 @@ def damage(hit_chance, parry=False, is_crit=False):
             if check_death() == False:
                 almost_ded(parry)
             elif check_death() == True:
-                world(x, y)
+                world()
         if is_crit == False:
             mob['hp'] = mob['hp'] - damage
             print(bcolors.OKGREEN + '<< You Dealt' + bcolors.OKCYAN + '({})'.format(damage) + bcolors.OKGREEN + 'Damage To ({})! ({}) Health Is Now'.format(mob['name'], mob['name']) + bcolors.OKCYAN + '({}hp)'.format(mob['hp']) + bcolors.OKGREEN + '>>' + bcolors.ENDC)
@@ -614,7 +617,7 @@ def damage(hit_chance, parry=False, is_crit=False):
             if check_death() == False:
                 almost_ded(parry)
             elif check_death() == True:
-                world(x, y)
+                world()
         if is_crit and parry:
             damage = damage * 1.5
             mob['hp'] = mob['hp'] - damage
@@ -623,7 +626,7 @@ def damage(hit_chance, parry=False, is_crit=False):
             if check_death() == False:
                 almost_ded(parry)
             elif check_death() == True:
-                world(x, y)
+                world()
         if parry:
             mob['hp'] = mob['hp'] - damage
             print(bcolors.OKGREEN + '<< You Parried the Attack and Dealt' + bcolors.OKCYAN + '({})'.format(damage) + bcolors.OKGREEN + 'Damage To ({})! ({}) Health Is Now'.format(mob['name'], mob['name']) + bcolors.OKCYAN + '({}hp)'.format(mob['hp']) + bcolors.OKGREEN + '>>' + bcolors.ENDC)
@@ -631,7 +634,7 @@ def damage(hit_chance, parry=False, is_crit=False):
             if check_death() == False:
                 almost_ded(parry)
             elif check_death() == True:
-                world(x, y)
+                world()
     else:
         print(bcolors.WARNING + '<< You Didn\'t Land Your Hit... >>' + bcolors.ENDC)
         enemie_turn()
@@ -655,6 +658,7 @@ def check_death():
         lv_up()
         play = True
         combat = False
+        world()
         return True
     return False
 
@@ -665,7 +669,7 @@ def almost_ded(x):
     if mob['hp'] <= mob['hp']/3:
         print('<< It\'s Almost Dead! >>')
     if x == True:
-        inputs()
+        inputs(False, True)
     else:
         enemie_turn()
 
@@ -680,16 +684,16 @@ def enemie_turn():
         player_stat['HP'] = player_stat['HP'] - damage
         print(bcolors.FAIL + '<< ({}) Dealt'.format(mob['name']) + bcolors.WARNING + '({})'.format(damage) + bcolors.FAIL + 'Damage! Your Health Is Now' + bcolors.WARNING + '({}hp)'.format(player_stat['HP']) + bcolors.FAIL + '>>' + bcolors.ENDC)
         check_death()
-        inputs()
+        inputs(False, True)
     if is_crit:
         damage = damage * 1.5
         player_stat['HP'] = player_stat['HP'] - damage
         print(bcolors.FAIL + bcolors.UNDERLINE + '<< ({}) Dealt'.format(mob['name'])  + bcolors.WARNING + '({})'.format(damage) + bcolors.FAIL +  'Critical Damage! Your Health Is Now' + bcolors.WARNING + '({}hp)'.format(player_stat['HP']) + bcolors.FAIL + '>>'.format(mob['name'], damage, player_stat['HP']) + bcolors.ENDC)
         check_death()
-        inputs()
+        inputs(False, True)
     else:
         print(bcolors.OKGREEN + '<< ({}) Didn\'t Land It\'s Hit... >>'.format(mob['name']) + bcolors.ENDC)
-        inputs()
+        inputs(False, True)
 
 #This function checks for enemie crits
 def enemie_crit():
@@ -728,7 +732,7 @@ def run_confirmation(run_chance):
             print('<< Your Run Attempt Failed... >>')
             enemie_turn()
     elif re.match(r'^(no|n|2)$', confirmation.lower()) != None:
-        inputs()
+        inputs(False, True)
     else:
         clear()
         invalid()
@@ -823,8 +827,11 @@ req = 10
 GOLD = 50
 x_len = len(map)- 1
 y_len = len(map[0])- 1
+global x
 x = 0
+global y
 y = 0
+global location
 location = map[y][x]
 
 
@@ -863,7 +870,9 @@ location_name = biom[location]['text']
 location_enemy_status = biom[location]['enemies']
 
 
-def world(x, y):
+def world():
+    global x
+    global y
     draw()
     print("LOCATION: " + biom[map[x][y]]["text"])
     draw()
@@ -976,7 +985,7 @@ def world(x, y):
             if biom[map[x][y]]['enemies'] == True:
                 check_encounter()
     elif re.match(r'^(5|inventory|inven|bag|sac|stats|stat)$', dest.lower()) != None:
-        inven()
+        inven(False)
 
 
 def draw():
@@ -1092,4 +1101,4 @@ while run:
     while play:
         save() #autosave
         clear()
-        world(x, y)
+        world()
